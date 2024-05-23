@@ -49,32 +49,32 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Patients List'),
+        title: const Text('Patients List'),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            DrawerHeader(
+            const DrawerHeader(
               child: Text('Menu'),
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
             ),
             ListTile(
-              title: Text('Dashboard'),
+              title: const Text('Dashboard'),
               onTap: () {},
             ),
             ListTile(
-              title: Text('Patients'),
+              title: const Text('Patients'),
               onTap: () {},
             ),
             ListTile(
-              title: Text('Appointments'),
+              title: const Text('Appointments'),
               onTap: () {},
             ),
             ListTile(
-              title: Text('Lab Reports'),
+              title: const Text('Lab Reports'),
               onTap: () {},
             ),
           ],
@@ -110,7 +110,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.edit),
+                  icon: const Icon(Icons.edit),
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => PatientForm(
@@ -121,7 +121,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete),
+                  icon: const Icon(Icons.delete),
                   onPressed: () => _deletePatient(patient['id']!),
                 ),
               ],
@@ -130,7 +130,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PatientForm(onSave: _addPatient),
@@ -145,7 +145,8 @@ class PatientForm extends StatefulWidget {
   final Map<String, String>? patient;
   final void Function(Map<String, String> patient) onSave;
 
-  PatientForm({this.patient, required this.onSave});
+  const PatientForm({this.patient, required this.onSave});
+
 
   @override
   _PatientFormState createState() => _PatientFormState();
@@ -210,14 +211,14 @@ class _PatientFormState extends State<PatientForm> {
         title: Text(widget.patient == null ? 'Add Patient' : 'Edit Patient'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
               TextFormField(
                 controller: _idController,
-                decoration: InputDecoration(labelText: 'ID'),
+                decoration: const InputDecoration(labelText: 'ID'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter ID';
@@ -227,7 +228,7 @@ class _PatientFormState extends State<PatientForm> {
               ),
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
+                decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter name';
@@ -237,7 +238,7 @@ class _PatientFormState extends State<PatientForm> {
               ),
               TextFormField(
                 controller: _bedNoController,
-                decoration: InputDecoration(labelText: 'Bed No'),
+                decoration: const InputDecoration(labelText: 'Bed No'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter bed number';
@@ -247,7 +248,7 @@ class _PatientFormState extends State<PatientForm> {
               ),
               TextFormField(
                 controller: _diagnosisController,
-                decoration: InputDecoration(labelText: 'Diagnosis'),
+                decoration: const InputDecoration(labelText: 'Diagnosis'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter diagnosis';
@@ -257,7 +258,7 @@ class _PatientFormState extends State<PatientForm> {
               ),
               TextFormField(
                 controller: _conditionController,
-                decoration: InputDecoration(labelText: 'Condition'),
+                decoration: const InputDecoration(labelText: 'Condition'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter condition';
@@ -267,7 +268,7 @@ class _PatientFormState extends State<PatientForm> {
               ),
               TextFormField(
                 controller: _idCardController,
-                decoration: InputDecoration(labelText: 'ID Card Number'),
+                decoration: const InputDecoration(labelText: 'ID Card Number'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter ID card number';
@@ -277,7 +278,7 @@ class _PatientFormState extends State<PatientForm> {
               ),
               TextFormField(
                 controller: _phoneController,
-                decoration: InputDecoration(labelText: 'Phone Number'),
+                decoration: const InputDecoration(labelText: 'Phone Number'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter phone number';
@@ -285,7 +286,7 @@ class _PatientFormState extends State<PatientForm> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submit,
                 child: Text(widget.patient == null ? 'Add' : 'Update'),
