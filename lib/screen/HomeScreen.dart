@@ -3,8 +3,8 @@ import 'package:kk/Helps/Utility.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:kk/screen/DoctorScreen.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 
 class HomeScreen extends StatelessWidget {
@@ -103,10 +103,12 @@ class CustomSidePanel extends StatelessWidget {
 
 class Patient {
   final String name;
-  final int serialNumber;
+  final String serialNumber;
   final String diagnosis;
   final int bedNumber;
   final String condition;
+  final int admitted;
+  final DateTime date;
 
   Patient({
     required this.name,
@@ -114,136 +116,54 @@ class Patient {
     required this.diagnosis,
     required this.bedNumber,
     required this.condition,
+    required this.admitted,
+    required this.date,
   });
+
+  factory Patient.fromJson(Map<String, dynamic> json) {
+    return Patient(
+      name: json['name'],
+      serialNumber: json['serialNumber'],
+      diagnosis: json['diagnosis'],
+      bedNumber: json['bedNumber'],
+      condition: json['condition'],
+      admitted: json['admitted'],
+      date: DateTime.parse(json['date']),
+    );
+  }
 }
 
 
-class Patients extends StatelessWidget {
-  final List<Patient> patientsList = [
-    Patient(
-      name: 'John Doe',
-      serialNumber: 1,
-      diagnosis: 'Fever',
-      bedNumber: 101,
-      condition: 'Stable',
-    ),
-    Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
 
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-            Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
+class Patients extends StatefulWidget {
+  @override
+  _PatientsState createState() => _PatientsState();
+}
 
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-            Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
+class _PatientsState extends State<Patients> {
+  late Future<List<Patient>> patientsList;
 
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-        Patient(
-      name: 'Jane Smith',
-      serialNumber: 2,
-      diagnosis: 'Fractured Arm',
-      bedNumber: 102,
-      condition: 'Critical',
-    ),
-    // Add more patients as needed
-  ];
+  @override
+  void initState() {
+    super.initState();
+    patientsList = fetchPatients();
+  }
+
+Future<List<Patient>> fetchPatients() async {
+  try {
+    final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/patients'));
+
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((patient) => Patient.fromJson(patient)).toList();
+    } else {
+      throw Exception('Failed to load patients: ${response.statusCode}');
+    }
+  } catch (error) {
+    print('Error fetching patients: $error');
+    throw Exception('Failed to load patients: $error');
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -256,67 +176,78 @@ class Patients extends StatelessWidget {
           children: [
             CustomSidePanel(),
             Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
+              child: FutureBuilder<List<Patient>>(
+                future: patientsList,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Patient> patients = snapshot.data!;
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(                        'List of Patients',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                          ),
-                          Spacer(),
-/*
-                          Icon(Icons.list, size: 60,
-                          
-                          ),*/
-                        ],
-
-                      ),
-                    ),
-                    DataTable(
-                      columns: [
-                        DataColumn(label: Text('Sr. No')),
-                        DataColumn(label: Text('Name')),
-                        DataColumn(label: Text('Bed No')),
-                        DataColumn(label: Text('Diagnosis')),
-                        DataColumn(label: Text('Condition')),
-                      ],
-                      rows: patientsList.map((patient) {
-                        return DataRow(
-                          cells: [
-                            DataCell(Text(patient.serialNumber.toString())),
-                            DataCell(Text(patient.name)),
-                            DataCell(Text(patient.bedNumber.toString())),
-                            DataCell(Text(patient.diagnosis)),
-                            DataCell(
-                              Text(
-                                patient.condition,
-                                style: TextStyle(
-                                  color: patient.condition == 'Critical' ? Colors.red : Colors.green,
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'List of Patients',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
+                                Spacer(),
+                              ],
                             ),
-                          ],
-                          onSelectChanged: (_) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) => PatientDetails(patient: patient),
-                              ),
-                            );
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
+                          ),
+                          DataTable(
+                            columns: [
+                              DataColumn(label: Text('Date')),
+                              DataColumn(label: Text('Sr. No')),
+                              DataColumn(label: Text('Name')),
+                              DataColumn(label: Text('Bed No')),
+                              DataColumn(label: Text('Diagnosis')),
+                              DataColumn(label: Text('Admitted')),
+                              DataColumn(label: Text('Condition')),
+                            ],
+                            rows: patients.map((patient) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(Text(patient.date.toString())),
+                                  DataCell(Text(patient.serialNumber.toString())),
+                                  DataCell(Text(patient.name)),
+                                  DataCell(Text(patient.bedNumber.toString())),
+                                  DataCell(Text(patient.diagnosis)),
+                                  DataCell(Text(patient.admitted == 1 ? 'true' : 'false')),
+                                  DataCell(
+                                    Text(
+                                      patient.condition,
+                                      style: TextStyle(
+                                        color: patient.condition == 'Critical' ? Colors.red : Colors.green,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                onSelectChanged: (_) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) => PatientDetails(patient: patient),
+                                    ),
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('${snapshot.error}'));
+                  }
+                  return Center(child: CircularProgressIndicator());
+                },
               ),
             ),
           ],
@@ -325,10 +256,13 @@ class Patients extends StatelessWidget {
     );
   }
 }
+
+
+
 class PatientDetails extends StatelessWidget {
   final Patient patient;
 
-  const PatientDetails({Key? key, required this.patient}) : super(key: key);
+  PatientDetails({required this.patient});
 
   @override
   Widget build(BuildContext context) {
@@ -341,11 +275,11 @@ class PatientDetails extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Name: ${patient.name}'),
-            Text('Sr. No: ${patient.serialNumber}'),
-            Text('Bed No: ${patient.bedNumber}'),
-            Text('Diagnosis: ${patient.diagnosis}'),
-            Text('Condition: ${patient.condition}'),
+            Text('Name: ${patient.name}', style: TextStyle(fontSize: 18)),
+            Text('Serial Number: ${patient.serialNumber}', style: TextStyle(fontSize: 18)),
+            Text('Diagnosis: ${patient.diagnosis}', style: TextStyle(fontSize: 18)),
+            Text('Bed Number: ${patient.bedNumber}', style: TextStyle(fontSize: 18)),
+            Text('Condition: ${patient.condition}', style: TextStyle(fontSize: 18)),
           ],
         ),
       ),
