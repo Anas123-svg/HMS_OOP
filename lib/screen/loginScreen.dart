@@ -6,10 +6,11 @@ import 'package:kk/backend-integration/global.dart';
 import 'package:http/http.dart' as http;
 import 'package:kk/screen/RegScreen.dart';
 import 'package:kk/screen/HomeScreen.dart';
+import 'package:kk/screen/Recp.dart';
 import 'package:kk/screen/DoctorScreen.dart';
-void main() {
-  runApp(const MyApp());
-}
+
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -29,26 +30,53 @@ class MyApp extends StatelessWidget {
 class Login extends StatelessWidget {
   String email = '';
   String password = '';
-  String designation='';
+  String ? designation='';
+  String name ='';
 
-  void loginPressed(BuildContext context) async {
-    if (email.isNotEmpty && password.isNotEmpty && designation.isNotEmpty) {
-      http.Response response = await AuthServices.login(email, password,designation);
-      Map<String, dynamic> responseMap = jsonDecode(response.body);
-      if (response.statusCode == 200 && designation=='Doctor' ) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) =>  DoctorScreen(),
-          ),
-        );
-      } else {
-        errorSnackBar(context, responseMap.values.first.toString());
+   void loginPressed(BuildContext context) async {
+    if (email.isNotEmpty && password.isNotEmpty && designation != null) {
+      try {
+        http.Response response = await AuthServices.login(email, password, designation!, name);
+        if (response.statusCode == 200) {
+          Map<String, dynamic> responseMap = jsonDecode(response.body);
+          if (responseMap.containsKey('user') && responseMap['user'] != null && responseMap['user'].containsKey('name')) {
+            name = responseMap['user']['name'];
+            print(name);
+
+            if (designation == 'Doctor') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => DoctorScreen(doctorName: name),
+                ),
+              );
+            } else if (designation == 'Reception') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => ReceptionistPanel(),
+                ),
+              );
+            } else {
+              errorSnackBar(context, 'Invalid designation');
+            }
+          } else {
+            print('Response body: ${response.body}');
+            errorSnackBar(context, 'User data not found in response');
+          }
+        } else {
+          Map<String, dynamic> errorMap = jsonDecode(response.body);
+          errorSnackBar(context, errorMap['message']);
+        }
+      } catch (e) {
+        print('Error: $e');
+        errorSnackBar(context, 'An error occurred while processing your request');
       }
     } else {
       errorSnackBar(context, 'Enter all required fields');
     }
   }
+
   
   @override
   Widget build(BuildContext context) {
@@ -94,13 +122,15 @@ class Login extends StatelessWidget {
                         child: Text('Reception'),
                         value: 'Reception',
                       ),
+                      /*
                       DropdownMenuItem(
                         child: Text('Admin'),
                         value: 'Admin',
-                      ),
+                      ),*/
                     ],
                     onChanged: (value) {
-                      designation = value ?? ''; // Assign default value if null
+                      designation = value ?? ''; 
+                      print(designation);
                     },
                     decoration: InputDecoration(
                       labelText: 'Designation',

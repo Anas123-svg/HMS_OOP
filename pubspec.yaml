@@ -33,6 +33,7 @@ dependencies:
   http: ^0.13.3
   fl_chart: ^0.36.0
   table_calendar: ^3.0.3
+  intl: ^0.17.0
 
 
   # The following adds the Cupertino Icons font to your application.

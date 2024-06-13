@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 class GenericSizedBox extends StatelessWidget {
   final String labelText;
   final String hintText;
@@ -30,6 +34,18 @@ class GenericSizedBox extends StatelessWidget {
     );
   }
 }
+
+void restartApp() {
+  if (kIsWeb) {
+    return;
+  }
+  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+
+  if (Platform.isMacOS || Platform.isLinux || Platform.isWindows) {
+    Process.run('dart', ['run']);
+  }
+}
+
 
 class WaveAppBarShape extends ShapeBorder {
   final double appBarHeight;

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:kk/Helps/Utility.dart';
 import 'dart:convert';
@@ -5,6 +7,7 @@ import 'package:kk/backend-integration/auth.dart';
 import 'package:kk/backend-integration/global.dart';
 import 'package:http/http.dart' as http;
 import 'package:kk/screen/HomeScreen.dart';
+import 'package:kk/screen/loginScreen.dart';
 
 class RegPage extends StatelessWidget {
   String email = '';
@@ -20,22 +23,23 @@ class RegPage extends StatelessWidget {
       try {
         http.Response response =
             await AuthServices.register(name, email, password, designation);
-        if (response.statusCode == 201 && designation=='Doctor') {
+        if (response.statusCode == 201) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => HomeScreen(),
+              builder: (BuildContext context) => Login(),
             ),
           );
         } else if (response.statusCode == 500) {
           errorSnackBar(context, 'Email already exists.');
         } else {
+          print(e);
           Map<String, dynamic> responseMap = jsonDecode(response.body);
           errorSnackBar(context, responseMap['error'] ?? 'An error occurred.');
         }
       } catch (e) {
         errorSnackBar(context, 'An error occurred. Please try again.');
-        print('Error: $e'); // For debugging purposes
+        print('Error: $e'); 
       }
     } else {
       errorSnackBar(context, 'Email is not valid');

@@ -24,11 +24,12 @@ class AuthServices{
     }
 
 
-    static Future<http.Response> login(String email, String password,String designation) async {
+    static Future<http.Response> login(String email, String password,String designation, String name) async {
     Map data = {
       "email": email,
       "password": password,
       "designation": designation,
+      "name": name,
     };
     var body = json.encode(data);
     var url = Uri.parse(host_Url + 'auth/login');
