@@ -105,6 +105,43 @@ List<BarChartGroupData> generateBarGroups(List<InOutPatientData> data) {
       x: daysOfWeek.indexOf(item.day),
       barRods: [
         BarChartRodData(y: inPatientsCount.toDouble(), colors: [Colors.blue], width: 20, borderRadius: BorderRadius.zero),
+        //BarChartRodData(y: outPatientsCount.toDouble(), colors: [Colors.green], width: 20, borderRadius: BorderRadius.zero),
+      ],
+    );
+  }
+
+ 
+  return dayDataMap.values.toList();
+}
+
+
+
+List<BarChartGroupData> generateBarGroups2(List<InOutPatientData> data) {
+  List<String> daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  
+  Map<String, BarChartGroupData> dayDataMap = {};
+
+
+  for (String day in daysOfWeek) {
+    dayDataMap[day] = BarChartGroupData(
+      x: daysOfWeek.indexOf(day),
+      barRods: [
+        BarChartRodData(y: 0, colors: [Colors.transparent], width: 20, borderRadius: BorderRadius.zero),
+        BarChartRodData(y: 0, colors: [Colors.transparent], width: 20, borderRadius: BorderRadius.zero),
+      ],
+    );
+  }
+
+
+  for (InOutPatientData item in data) {
+    int inPatientsCount = item.inPatientsCount;
+    int outPatientsCount = item.outPatientsCount;
+
+    dayDataMap[item.day] = BarChartGroupData(
+      x: daysOfWeek.indexOf(item.day),
+      barRods: [
+        //BarChartRodData(y: inPatientsCount.toDouble(), colors: [Colors.blue], width: 20, borderRadius: BorderRadius.zero),
         BarChartRodData(y: outPatientsCount.toDouble(), colors: [Colors.green], width: 20, borderRadius: BorderRadius.zero),
       ],
     );
@@ -113,6 +150,7 @@ List<BarChartGroupData> generateBarGroups(List<InOutPatientData> data) {
  
   return dayDataMap.values.toList();
 }
+
 
 
 
@@ -237,7 +275,7 @@ List<BarChartGroupData> generateBarGroups(List<InOutPatientData> data) {
                                             height: 200,
                                             child: BarChart(
                                               BarChartData(
-                                                barGroups: generateBarGroups(admittedPatients), 
+                                                barGroups: generateBarGroups2(admittedPatients), 
                                                 borderData: FlBorderData(show: true),
                                                 titlesData: FlTitlesData(
                                                   leftTitles: SideTitles(showTitles: true),
